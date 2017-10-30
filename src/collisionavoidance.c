@@ -6,10 +6,11 @@ int collisionAvoidance(int ownAlt, int invAlt, int distance, int myflightNum, in
   if (distance<minDist){
     adjustAltBy = (minDist-distance)/2;
     if (ownAlt < invAlt){
-      adjustAltBy = (avoid)*-1;
+      adjustAltBy = (adjustAltBy)*-1;
     }else if(ownAlt = invAlt){
       if (myflightNum < invflightNum){
-      adjustAltBy = (avoid)*-1;
+      adjustAltBy = (adjustAltBy)*-1;
+      }
 	
     }
     
