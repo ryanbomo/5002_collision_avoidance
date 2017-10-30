@@ -1,3 +1,12 @@
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <cstring>
+#include <sstream>
+#include <iostream>
+#include "collisionavoidance.h"
+
+
 class Aircraft{
 	public:
 		int speed;		//aircraft speed
@@ -7,6 +16,7 @@ class Aircraft{
 		int xloc;		//aircraft X location (East-West)
 		int yloc;		//aircraft Y location (altitude)
 		int zloc;		//aircraft Z location (North-South)
+		string AircraftReg;	//unique alpha numeric identifier
 		bool aircraftNearby;	//bool value for seeing if aircraft nearby
 		Aircraft *neighbors[];	//array of neighbors
 
@@ -14,12 +24,7 @@ class Aircraft{
 		string broadcast();		//send data
 		string checkNeighbors();	//check for neighbors
 		string listen();		//grab neighbors broadcast
-		string setStep();		// if neighbor and colide, adjust
-							//otherwise continue as normal
-		string verifyStep();
-		void step(){
-			//take step
-		}
+
 
 }
 
@@ -71,7 +76,6 @@ void run_sim(simTime){
 }
 
 void sim_step(){
-		// If hasNeighbors
 			//listen
 		//set step
 		//take step

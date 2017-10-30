@@ -1,0 +1,1 @@
+int collisionAvoidance(int alt1, int alt2, int distance);
