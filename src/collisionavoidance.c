@@ -1,12 +1,16 @@
 #include "collisionavoidance.h"
 const int  minDist = 1000;
 
-int collisionAvoidance(int ownAlt, int invAlt, int distance){
+int collisionAvoidance(int ownAlt, int invAlt, int distance, int myflightNum, int invflightNum){
   int adjustAltBy;
   if (distance<minDist){
     adjustAltBy = (minDist-distance)/2;
     if (ownAlt < invAlt){
       adjustAltBy = (avoid)*-1;
+    }else if(ownAlt = invAlt){
+      if (myflightNum < invflightNum){
+      adjustAltBy = (avoid)*-1;
+	
     }
     
   }else{
