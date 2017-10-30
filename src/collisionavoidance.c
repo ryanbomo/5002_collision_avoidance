@@ -1,3 +1,4 @@
+#include "collisionavoidance.h"
 const int  minDist = 1000;
 
 int collisionAvoidance(int ownAlt, int invAlt, int distance){
@@ -13,3 +14,15 @@ int collisionAvoidance(int ownAlt, int invAlt, int distance){
   }
   return avoid;
 }
+
+
+/*
+ * This will be a draft of a better x,y,z coordinate collision avoidance system
+
+
+
+int betterCollisionAvoidance(triCoords mycoords, triCoords invCoords, int distance){
+  
+}
+
+*/
