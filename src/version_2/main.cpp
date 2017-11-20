@@ -4,29 +4,11 @@
 #include <cstring>
 #include <sstream>
 #include <iostream>
-#include "collisionavoidance.h"
+#include "aircraft.h"
+#include "collision_avoidance.h"
 
 
-class Aircraft{
-	public:
-		int speed;		//aircraft speed
-		int pitch;		//aircraft pitch (0-359)
-		int yaw;		//aircraft yaw (0-359)
-		int roll;		//aircraft roll (0-359)
-		int xloc;		//aircraft X location (East-West)
-		int yloc;		//aircraft Y location (altitude)
-		int zloc;		//aircraft Z location (North-South)
-		string AircraftReg;	//unique alpha numeric identifier
-		bool aircraftNearby;	//bool value for seeing if aircraft nearby
-		Aircraft *neighbors[];	//array of neighbors
 
-		//functions
-		string broadcast();		//send data
-		string checkNeighbors();	//check for neighbors
-		string listen();		//grab neighbors broadcast
-
-
-}
 
 int main(int argc,char *argv[]){
 
