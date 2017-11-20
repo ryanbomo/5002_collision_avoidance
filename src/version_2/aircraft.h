@@ -22,6 +22,6 @@ class Aircraft{
 		string broadcast();		//send data
 		string check_neighbors();	//check for neighbors
 		string listen();		//grab neighbors broadcast
-}
+};
 
 #endif

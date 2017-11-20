@@ -9,15 +9,15 @@ struct triCoords {
 };
 
 class Collision_avoidance{
-	private:
-		triCoords myCoordinates;
-		int myFlightID;
-	public:
-		//functions
-        void Collision_avoidance(triCoords myCurCoords,int myFlightID);
-		int compute_ca(triCoords invCurCoords, int invFlightID);
-		triCoords calc_adjust();
-        triCoords get_my_coords();
-}
+  private:
+    struct triCoords myCoordinates;
+    int myFlightID;
+  public:
+    //functions
+    void Collision_avoidance(triCoords myCurCoords,int myFlightID);
+    int compute_ca(triCoords invCurCoords, int invFlightID);
+    triCoords calc_adjust(int dist, int upDown);
+    triCoords get_my_coords();
+};
 
 #endif

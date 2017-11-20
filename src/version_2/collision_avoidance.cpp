@@ -1,36 +1,78 @@
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <cstring>
+#include <sstream>
+#include <iostream>
+#include <math.h>
 
 #include "collision_avoidance.h"
 
+#define MINDIST 8000
 
-void Collision_avoidance::Collision_avoidance(triCoords myCurCoords,int myFlightID);
+
+void Collision_avoidance::Collision_avoidance(triCoords *myCurCoords,int myFlightNum)
 {
-   //code stuff goes here
+    myCoordinates = malloc(sizeof(*myCoordinates));
+    myCoordinates->x = myCurCoords.x;
+    myCoordinates->y = myCurCoords.y;
+    myCoordinates->y = myCurCoords.z;
+    myFlightID = myFlightNum;
+    
 }
 
 
 int Collision_avoidance::compute_ca(triCoords invCurCoords, int invFlightID)
 {
-    //checks distance using tricoord system
-    //IF too close:
-        //run calc_adjust()
-        //return 1
-    //else
-        //return 0
+  int myX, myY, myZ, invX, invY, invZ, myID, invID, upDown;
+  myX = myCoordinates.x;
+  myY = myCoordinates.y;
+  myZ = myCoordinates.z;
+  invX = invCurCoords.x;
+  invY = invCurCoords.y;
+  invZ = invCurCoords.z;
+  myID = myFlightID;
+  invID = invFlightID;
+  
+  if (myY>invY){
+    upDown = 1;
+  }else if (myY<invY){
+    upDown = 0;
+  }else {
+    if (myID > invID){
+      upDown = 1;
+    }else if (myID < invID){
+      upDown = 0;
+    }
+  }
+  
+  float xSqr = (myX - invX) * (myX - invX);
+  float ySqr = (myY - invY) * (myY - invY);
+  float zSqr = (myZ - invZ) * (myZ - invZ);
+
+  double mySqr = xSqr + ySqr + zSqr;
+
+  double myDistance = sqrt(mySqr);
+  if (abs(myDistance) > MINDIST){
+    return 0;
+  } else if (abs(myDistance)<=MINDIST){
+    calc_adjust(myDistance/2, upDown);
+    return 1;
+  }
 }
 
-void Collision_avoidance::calc_adjust()
+void Collision_avoidance::calc_adjust(int dist, int upDown)
 {
-    //looks at current distance and desired distance for amount to adjust by
-    // if lower
-        //adjust by that much down
-    //else if higher
-        //adjust by that much up
-    // else if same
-        //use flightID to tell if up or down
+  if (upDown = 0){
+   // adjust down 
+  }else if (upDown = 1){
+   // adjust up 
+  }
 }
 
-triCoords Collision_avoidnace::get_my_coords()
+triCoords Collision_avoidance::get_my_coords()
 {
     return myCoordinates;
 }
+
+
