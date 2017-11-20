@@ -18,7 +18,7 @@ class Aircraft{
 		Aircraft *neighbors[];	//array of neighbors
 	public:
 		//functions
-		void init(int inSpeed, triCoords initTriCoords, int flightNum);			//set up initialize
+		void Aircraft(int inSpeed, triCoords initTriCoords, int flightNum);			//set up initialize
 		string broadcast();		//send data
 		string check_neighbors();	//check for neighbors
 		string listen();		//grab neighbors broadcast

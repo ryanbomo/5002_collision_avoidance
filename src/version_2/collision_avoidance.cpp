@@ -2,7 +2,14 @@
 
 #include "collision_avoidance.h"
 
-int Collision_avoidance::compute_ca()
+
+void Collision_avoidance::Collision_avoidance(triCoords myCurCoords,int myFlightID);
+{
+   //code stuff goes here
+}
+
+
+int Collision_avoidance::compute_ca(triCoords invCurCoords, int invFlightID)
 {
     //checks distance using tricoord system
     //IF too close:
@@ -23,7 +30,7 @@ void Collision_avoidance::calc_adjust()
         //use flightID to tell if up or down
 }
 
-void Collision_avoidance::update_tri_coords(triCoords myCurCoords, triCoords invCurCoords, int myFlightID, int invFlightID)
+triCoords Collision_avoidnace::get_my_coords()
 {
-   //code stuff goes here
+    return myCoordinates;
 }

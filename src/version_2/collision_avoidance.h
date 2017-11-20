@@ -11,14 +11,13 @@ struct triCoords {
 class Collision_avoidance{
 	private:
 		triCoords myCoordinates;
-		triCoords invCoordinates;
 		int myFlightID;
-		int invFlightID;
 	public:
 		//functions
-		void update_info(triCoords myCurCoords, triCoords invCurCoords, int myFlightID, int invFlightID); 
-		int compute_ca();
-		triCoords return_adjust();
+        void Collision_avoidance(triCoords myCurCoords,int myFlightID);
+		int compute_ca(triCoords invCurCoords, int invFlightID);
+		triCoords calc_adjust();
+        triCoords get_my_coords();
 }
 
 #endif
