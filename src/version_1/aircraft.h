@@ -13,7 +13,7 @@ class Aircraft{
 		int speed;		//aircraft speed
 		triCoords myCoords;	//tri coordinate structre of my coordinates
 		Collision_avoidance CA;	//declaration of collision avoidance object
-		int AircraftID;	//unique alpha numeric identifier
+		int AircraftID;		//unique numeric identifier
 		bool aircraftNearby;	//bool value for seeing if aircraft nearby
 		Aircraft *neighbors[];	//array of neighbors
 	public:
