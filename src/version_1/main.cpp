@@ -4,7 +4,8 @@
 #include <cstring>
 #include <sstream>
 #include <iostream>
-#include "collisionavoidance.h"
+#include "aircraft.h"
+#include "collision_avoidance.h"
 
 
 
@@ -13,7 +14,7 @@ int main(int argc,char *argv[]){
 
 	string strcmd1;
         int option;
-	int simTime
+	int simTime;
 
 	while ((option = getopt(argc, argv, "f::t:")) != -1) {
 		switch (option) {

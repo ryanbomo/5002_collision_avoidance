@@ -11,10 +11,9 @@ struct triCoords {
 class Aircraft{
 	private:
 		int speed;		//aircraft speed
-        int cardinality; //0-359 to represent direction
-		triCoords my_coords;	//tri coordinate structre of my coordinates
+		triCoords myCoords;	//tri coordinate structre of my coordinates
 		Collision_avoidance CA;	//declaration of collision avoidance object
-		int AircraftReg;	//unique alpha numeric identifier
+		int AircraftID;	//unique alpha numeric identifier
 		bool aircraftNearby;	//bool value for seeing if aircraft nearby
 		Aircraft *neighbors[];	//array of neighbors
 	public:
