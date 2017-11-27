@@ -25,6 +25,7 @@ string Aircraft::check_neighbors()
     //For Each Neighbor
     for (int i=0;i<numNeighbors;i++){
       ca.compute_ca();
+      numChecks = numChecks - 1;
     }
         //Check CA against neighbor's triCoords
         //if Adjust:
