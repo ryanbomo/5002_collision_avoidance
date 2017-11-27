@@ -11,29 +11,25 @@
 #define MINDIST 8000
 
 
-void Collision_avoidance::Collision_avoidance(triCoords *myCurCoords,int myFlightNum)
+void Collision_avoidance::Collision_avoidance(int myFlightNum, int x, int y, int z)
 {
-    myCoordinates = malloc(sizeof(*myCoordinates));
-    myCoordinates->x = myCurCoords.x;
-    myCoordinates->y = myCurCoords.y;
-    myCoordinates->y = myCurCoords.z;
+
     myFlightID = myFlightNum;
+    myX = x;
+    myY = y;
+    myZ = z;
     
 }
 
 
 // check to see if we need to avoid stuff
-int Collision_avoidance::compute_ca(triCoords invCurCoords, int invFlightID)
+int Collision_avoidance::compute_ca(int invFlightNum, int x, int y, int z)
 {
-  int myX, myY, myZ, invX, invY, invZ, myID, invID, goUp;
-  myX = myCoordinates.x;
-  myY = myCoordinates.y;
-  myZ = myCoordinates.z;
-  invX = invCurCoords.x;
-  invY = invCurCoords.y;
-  invZ = invCurCoords.z;
-  myID = myFlightID;
-  invID = invFlightID;
+  int invX, invY, invZ, myID, invID, goUp;
+  invX = x;
+  invY = y;
+  invZ = z;
+  invID = invFlightNum;
   
   if (myY>invY){
     goUp = 1;
@@ -67,26 +63,36 @@ int Collision_avoidance::compute_ca(triCoords invCurCoords, int invFlightID)
 void Collision_avoidance::calc_adjust(int dist, int goUp)
 {
   int newY, adjustBy;
-  adjsutBy = MINDIST-dist;
+  adjustBy = MINDIST-dist;
   adjustBy = adjustBy/2;
   if (goUp = 0){
     while(newY-adjustBy <= 1000){
       adjustBy = adjustBy/2;
       if (adjustBy <1) {
-        adjusBy = 0;
+        adjustBy = 0;
       }
     }
-    newY = myCoordinates.y-adjustBy;
-    myCoordinates.y = newY;
+    newY = myY-adjustBy;
+    myY = newY;
   }else if (goUp = 1){
-    newY = myCoordinates.y+adjustBy;
-    myCoordinates.y = newY;
+    newY = myY+adjustBy;
+    myY = newY;
   }
 }
 
-triCoords Collision_avoidance::get_my_coords()
+int Collision_avoidance::get_myX()
 {
-    return myCoordinates;
+    return myX;
+}
+
+int Collision_avoidance::get_myY()
+{
+    return myY;
+}
+
+int Collision_avoidance::get_myZ()
+{
+    return myZ;
 }
 
 

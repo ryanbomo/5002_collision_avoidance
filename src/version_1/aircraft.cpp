@@ -16,7 +16,7 @@ string Aircraft::broadcast()
 string Aircraft::check_neighbors()
 {
   int numNeighbors, numChecks;
-  Collision_avoidance* ca = new Collision_avoidance(*myCoordinates, AircraftID);
+  Collision_avoidance* ca = new Collision_avoidance(myX, myY, myZ, AircraftID);
 
     // get numNeighbors
 
@@ -45,7 +45,7 @@ int Aircraft::listen()
 
 }
 
-void Aircraft::init(int inSpeed, triCoords initTriCoords, int flightNum)
+void Aircraft(int inSpeed, int myX, int myY, int myZ, int flightNum)
 {
     //initialize all the stuff the aircraft does
     // should have:

@@ -2,22 +2,18 @@
 #ifndef collision_avoidance_H
 #define collision_avoidance_H
 
-struct triCoords {
-  int x;
-  int y;
-  int z;
-};
-
 class Collision_avoidance{
   private:
-    struct triCoords myCoordinates;
+    int myX, myY, myZ; //airplanes X, Y, Z coordinates
     int myFlightID;
   public:
     //functions
-    void Collision_avoidance(triCoords myCurCoords,int myFlightID);
-    int compute_ca(triCoords invCurCoords, int invFlightID);
-    triCoords calc_adjust(int dist, int upDown);
-    triCoords get_my_coords();
+    void Collision_avoidance(int myFlightNum, int X, int Y, int Z);
+    int compute_ca(int invX, int invY, int invZ, int invFlightID);
+    int calc_adjust(int dist, int upDown);
+    int get_myX();
+    int get_myY();
+    int get_myZ();
 };
 
 #endif
