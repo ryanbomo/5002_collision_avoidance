@@ -1,4 +1,6 @@
-import math, re
+import math, re, sqlite3
+conn = sqlite3.connect('airwaves.db')
+c=conn.cursor()
 
 class Collision_avoidance:
     MINDIST = 1000
@@ -36,14 +38,16 @@ class Collision_avoidance:
         mySqr = xSqr + ySqr + zSqr
         myDistance = math.sqrt(mySqr)
         if (myDistance < self.MINDIST):
-            print("Intruder is " + str(myDistance) + " units away")
+            print(str(self.myID) + ":Intruder Detected.")
+            print(str(self.myID) + ":Intruder is " + str(myDistance) + " units away.")
+            print(str(self.myID) + ":Evasive Action Needed.")
             self.calc_adjust(myDistance,goUp)
             return 1
         else:
             return 0
     
     def calc_adjust(self,distance,goUp):
-        adjustDistance = distance/2
+        adjustDistance = (self.MINDIST-distance)/2
         if (goUp == 0):
             self.myY = self.myY -adjustDistance
         elif (goUp==1):
@@ -64,26 +68,99 @@ class Aircraft:
 
     ## This is a sort of input
     def listen(self):
-        return thing
+        print(str(self.ID)+": Listening.")
+        self.neighbors = db_reader(self.ID)
 
     ## This is a sort of output
     def broadcast(self):
-        return thing
-  
+        print(str(self.ID)+": Broadcasting.")
+        infoList = [self.ID, self.x, self.y, self.z, self.speed, self.cardinality]
+        db_writer(infoList)
+
+
+    ##
     def check_neighbors(self):
-        ## set up info for CA
+        print(str(self.ID)+": Checking Neighbors.")
         myInfo = [self.ID, self.x, self.y, self.z]
-        invInfo = [2,9500,9500,9500]
+        ## print(myInfo)
+        for i in self.neighbors:
+            invInfo = [i]
+            for j in self.neighbors[i]:
+                invInfo.append(j)
+            ## create the collision avoidance object and call it
+            caInstance = Collision_avoidance(invInfo,myInfo)
+            didAdjust = caInstance.run_ca()
+            if (didAdjust>0):
+                self.y = caInstance.myY
         
-        ## create the collision avoidance object and call it
-        caInstance = Collision_avoidance(invInfo,myInfo)
-        didAdjust = caInstance.run_ca()
-        if (didAdjust>0):
-            self.y = caInstance.myY
+
+    ## NEEDS WORK, NOT CORRECT VERSION, JUST FOR CLASS DEMO NOW
+    ## NOT WORKING CORRECTLY in DEMO VERSION EITHER
+    def move(self):
+        print(str(self.ID)+": Moving.")
+        if self.cardinality == 0:
+            self.z = self.z + self.speed
+        if self.cardinality == 180:
+            self.z = self.z -self.speed
+##        if 0<=(self.cardinality)<90 or 270<(self.cardinality)<=360:
+##            x_sign = 1
+##        elif 90<(self.cardinality)<270:
+##            x_sign = -1
+##        else:
+##            x_sign = 0
+##        if
+        
+
+## NEED TO UPDATE PER CLASS DISCUSSION
+class Simulator:
+    indef = False
+    airplanes = []
+    
+    def __init__(self, stepNum):
+        self.steps = stepNum
+
+    def createAirplanes(self):
+        sqliteGet = "SELECT * FROM airwaves;"
+        for row in c.execute(sqliteGet):
+            planeInfo = [row[0],row[1],row[2],row[3],row[4],row[5]]
+            self.airplanes.append(Aircraft(planeInfo))
+            
+    def run_sim(self): 
+        if self.steps ==0:
+            self.indef = True
+        if self.indef:
+            while self.indef:
+                for a in self.airplanes:
+                    a.listen()
+                    a.check_neighbors()
+                    a.move()
+                    a.broadcast()
+        else:
+            while self.steps>0:
+                for a in self.airplanes:
+                    a.listen()
+                    a.check_neighbors()
+                    a.move()
+                    a.broadcast()
+                self.steps -=1
+                
+    
+
+def db_writer(infoList):
+    sqliteUpdate = "UPDATE airwaves SET x=" + str(infoList[1]) + ",y=" + str(infoList[2]) + ",z=" + str(infoList[3]) +" WHERE airplane_id = " + str(infoList[0])+";"
+    c.execute(sqliteUpdate)
+    conn.commit()
+
+def db_reader(ID):
+    neighborDict = {}
+    sqliteGet = "SELECT * FROM airwaves WHERE airplane_id !="+str(ID)+";"
+    for row in c.execute(sqliteGet):
+        dataSet = [row[1],row[2],row[3],row[4],row[5]]
+        dictID = row[0]
+        neighborDict[dictID] = dataSet
+    return neighborDict
 
 
-airplaneInfo = [1,10000,10000,10000,200,40]
-myairplane = Aircraft(airplaneInfo)
-print("My current height is " + str(myairplane.y))
-myairplane.check_neighbors()
-print("My new height will be " + str(myairplane.y))
+sim = Simulator(0)
+sim.createAirplanes()
+sim.run_sim()
