@@ -1,4 +1,9 @@
+## Correct speed so that it is a property of the plane, and so that steps work correctly
+## Fix Move() function
+
 import math, re, sqlite3
+
+##
 conn = sqlite3.connect('airwaves.db')
 c=conn.cursor()
 
@@ -17,18 +22,18 @@ class Collision_avoidance:
         self.myY = myInfo[2]
         self.myZ = myInfo[3]
 
-    ## 
+    
     def run_ca(self):
         ##figure goUp
         if (self.myY < self.invY):
             goUp = 0
         elif (self.myY > self.invY):
             goUp = 1
-        else:
-            if (self.myID > self.invID):
-                goUp = 1
-            else:
-                goUp = 0
+        elif (self.myID > self.invID):
+            goUp = 1
+        elif (self.myID < self.invID):
+            goUp = 0
+        return goUp
         
     
         ## calc distance
@@ -125,32 +130,62 @@ class Simulator:
             planeInfo = [row[0],row[1],row[2],row[3],row[4],row[5]]
             self.airplanes.append(Aircraft(planeInfo))
             
-    def run_sim(self): 
+    def run_sim(self):
+        simStep = 1
         if self.steps ==0:
             self.indef = True
         if self.indef:
             while self.indef:
+                print("This is step: " +str(simStep))
                 for a in self.airplanes:
                     a.listen()
                     a.check_neighbors()
                     a.move()
                     a.broadcast()
+                commit_stage()
+                simStep +=1
         else:
-            while self.steps>0:
+            while simStep != self.numSteps:
+                print("This is step: " +str(simStep))
                 for a in self.airplanes:
                     a.listen()
                     a.check_neighbors()
                     a.move()
                     a.broadcast()
-                self.steps -=1
+                simStep+=1
                 
-    
-
-def db_writer(infoList):
-    sqliteUpdate = "UPDATE airwaves SET x=" + str(infoList[1]) + ",y=" + str(infoList[2]) + ",z=" + str(infoList[3]) +" WHERE airplane_id = " + str(infoList[0])+";"
+## commits stage changes
+def commit_stage():
+    sqliteUpdate = '''UPDATE airwaves
+SET
+      x = (SELECT stage.x 
+                            FROM stage
+                            WHERE stage.airplane_id = airwaves.airplane_id )
+    , y = (SELECT stage.y
+                            FROM stage
+                            WHERE stage.airplane_id = airwaves.airplane_id )
+    , z = (SELECT stage.z
+                            FROM stage
+                            WHERE stage.airplane_id = airwaves.airplane_id )
+WHERE
+    EXISTS (
+        SELECT *
+        FROM stage
+        WHERE stage.airplane_id = airwaves.airplane_id
+    )'''
     c.execute(sqliteUpdate)
     conn.commit()
+    return 1
 
+
+## This writes to the database, currently platform specific
+def db_writer(infoList):
+    sqliteUpdate = "UPDATE stage SET x=" + str(infoList[1]) + ",y=" + str(infoList[2]) + ",z=" + str(infoList[3]) +" WHERE airplane_id = " + str(infoList[0])+";"
+    c.execute(sqliteUpdate)
+    conn.commit()
+    return 1
+
+## This reads from the database, currently platform specific
 def db_reader(ID):
     neighborDict = {}
     sqliteGet = "SELECT * FROM airwaves WHERE airplane_id !="+str(ID)+";"
@@ -164,3 +199,4 @@ def db_reader(ID):
 sim = Simulator(0)
 sim.createAirplanes()
 sim.run_sim()
+            
