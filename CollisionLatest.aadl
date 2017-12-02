@@ -1,0 +1,44 @@
+package Aircraft
+public
+	with Base_Types;
+	process CollisionAvoidance
+		features
+      myX: in data port Base_Types::integer;
+      myY: in data port Base_Types::integer;
+      myZ: in data port Base_Types::integer;
+      invX: in data port Base_Types::integer;
+      invY: in data port Base_Types::integer;
+      invZ: in data port Base_Types::integer;
+      myID: in data port Base_Types::integer;
+      invID: in data port Base_Types::integer;
+      speed: in data port Base_Types::float;
+      cardinality: in data port Base_Types::float;
+      annex agree{**
+      		eq locationInt:int;
+      		const east: int =1;
+      		const west: int =2;
+      		const north: int =3;
+      		const south: int =4;
+      		eq goesUp: int;
+      		eq goesDown: bool;
+      		assume "positive own altitude": myY>1;
+      		assume "positive intruder altitude": invY>1;
+      		assume "positive own ID": myID>1;
+      		assume "positive intruder ID": invID>1;
+      		guarantee "safe manuevers needed": true -> (myY-invY)<1000 or (invY-myY)<1000;
+      **};
+		
+	end CollisionAvoidance;
+	
+	process implementation CollisionAvoidance.LatestCollisionAlgorithm_impl
+		annex agree{**	
+				assign goesUp = 1->if (myY>invY)  then 1 
+									  else if (myID>invID) then 1
+									  else if (invY>myY) then 0
+									  else if (invID>myID) then 0 
+									  else 0; 
+						
+		**};
+	end CollisionAvoidance.LatestCollisionAlgorithm_impl;
+
+end Aircraft;
