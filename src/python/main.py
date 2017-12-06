@@ -131,7 +131,7 @@ class Simulator:
             self.airplanes.append(Aircraft(planeInfo))
             
     def run_sim(self):
-        simStep = 1
+        simStep = 0
         if self.steps ==0:
             self.indef = True
         if self.indef:
@@ -145,14 +145,15 @@ class Simulator:
                 commit_stage()
                 simStep +=1
         else:
-            while simStep != self.numSteps:
+            while simStep < self.steps:
+                simStep+=1
                 print("This is step: " +str(simStep))
                 for a in self.airplanes:
                     a.listen()
                     a.check_neighbors()
                     a.move()
                     a.broadcast()
-                simStep+=1
+                
                 
 ## commits stage changes
 def commit_stage():
