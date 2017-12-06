@@ -196,7 +196,5 @@ def db_reader(ID):
     return neighborDict
 
 
-sim = Simulator(0)
-sim.createAirplanes()
-sim.run_sim()
+
             
