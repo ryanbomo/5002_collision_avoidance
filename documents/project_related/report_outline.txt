@@ -1,0 +1,20 @@
+Abstract
+Intro
+Process Model
+Requirements
+Design
+Components
+Test_CA
+    dev of ism
+    test caes
+    executed tests
+Mapping
+    table like paper
+Auto Mapping
+    Syntax Convo
+    Requirements
+    Implementation
+    Testing
+Conclusion
+
+Dataflow showing SQLite through Python Functions to USER/Sqlite

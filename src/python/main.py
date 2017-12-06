@@ -196,6 +196,19 @@ def db_reader(ID):
         neighborDict[dictID] = dataSet
     return neighborDict
 
+sim = Simulator(40)
+sim.createAirplanes()
+sim.run_sim()
 
+'''
+
+def Communicator
+    Has Listener and Broadcaster
+
+def Mover
+    Does the Movement updates
+
+CA stays the same
+'''
 
             
