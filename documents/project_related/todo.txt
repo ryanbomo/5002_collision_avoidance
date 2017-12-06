@@ -1,0 +1,34 @@
+﻿Things We Can Do:
+ - Requirements Documents
+     - For Collision Avoidance
+         - Software 1
+             - Swim lane for Pilot, Airplane, CA
+             - Use cases for CA
+             - Testing Scenarios
+             - Component Design Discussion/Docs
+     - For Translator
+         - Software 2
+ - Collision Avoidance in Python
+ - Collision Avoidance in CPP
+ - Simulator in Python
+     - Simple Steps
+ - Manual Mapping for AADL to Python
+ - Translator for AADL to Python
+     - Only structural, no logic
+ - Report
+     - What Software Process?
+     - On CA Software
+     - On Translator 
+     - Section on creating a translator for logic
+ - Presentation
+
+Things Might Be Able To Do:
+ - Simulator in CPP
+ - Simulator in Python
+     - Complex Steps
+
+Things We Probably Can Not Do:
+ - Translator for AADL to Python
+     - Structural and Logic
+
+
