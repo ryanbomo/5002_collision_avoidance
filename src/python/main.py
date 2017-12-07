@@ -176,7 +176,7 @@ class Simulator:
     def run_sim(self):
         simStep = 0
         if self.steps ==0:
-            while self.indef:
+            while True:
                 print("This is step: " +str(simStep))
                 for a in self.airplanes:
                     a.listen()
