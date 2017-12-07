@@ -160,7 +160,7 @@ class Aircraft:
         
         
 
-## NEED TO UPDATE PER CLASS DISCUSSION
+
 class Simulator:
     indef = False
     airplanes = []
@@ -242,6 +242,3 @@ def db_reader(ID):
     return neighborDict
 
 
-sim = Simulator(40)
-sim.create_airplanes()
-sim.run_sim()
