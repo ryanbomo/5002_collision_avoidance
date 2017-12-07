@@ -177,6 +177,7 @@ class Simulator:
         simStep = 0
         if self.steps ==0:
             while True:
+                simStep +=1
                 print("This is step: " +str(simStep))
                 for a in self.airplanes:
                     a.listen()
@@ -184,7 +185,6 @@ class Simulator:
                     a.move()
                     a.broadcast()
                 commit_stage()
-                simStep +=1
         else:
             while simStep < self.steps:
                 simStep+=1
