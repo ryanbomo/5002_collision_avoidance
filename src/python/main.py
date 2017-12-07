@@ -51,8 +51,8 @@ class Collision_avoidance:
  
         
 class Mover:
-    ANGLE_ASCENT = 0
-    ANGLE_DESCENT = 0
+    ANGLE_ASCENT = 5
+    ANGLE_DESCENT = 5
 
     def __init__(self, my_speed, my_id):
         self.speed = my_speed
@@ -60,26 +60,26 @@ class Mover:
 
     def move(self, goUp, my_x, my_y, my_z, card):
         if (goUp == 1):
-            print(str(self.myID) + ": Moving Up")
             ## calc ascent
             ascent = math.sin((self.ANGLE_ASCENT*math.pi)/180)*self.speed
             newY = my_y + ascent
             ## calc vertical movement
             vert = math.cos((self.ANGLE_ASCENT*math.pi)/180)*self.speed
             newXZ = self.vert_move(my_x, my_z, vert, card)
+            print(str(self.myID) + ": Moving Up to " + str(newXZ[0])+ ", " + str(newY) + ", " + str(newXZ[1]))
             ## return new coords
         elif (goUp == 0):
-            print(str(self.myID) + ": Moving Down")
             ## calc descent
             descent = math.sin((self.ANGLE_DESCENT*math.pi)/180)*self.speed
             newY = my_y - descent
             ## calc verticla movment
             vert = math.cos((self.ANGLE_DESCENT*math.pi)/180)*self.speed
             newXZ = self.vert_move(my_x, my_z, vert, card)
+            print(str(self.myID) + ": Moving Down to " + str(newXZ[0])+ ", " + str(newY) + ", " + str(newXZ[1]))
         else:
-            print(str(self.myID)+": Moving Flat")
             newY = my_y
             newXZ = self.vert_move(my_x, my_z, self.speed, card)
+            print(str(self.myID) + ": Moving Flat to " + str(newXZ[0])+ ", " + str(newY) + ", " + str(newXZ[1]))
             
             
         newCoords = [newXZ[0], newY, newXZ[1]]
@@ -87,7 +87,12 @@ class Mover:
     
     def vert_move(self, x, z, dist, card):
         x_change = math.sin((card*math.pi)/180)*dist
+        ## floating point issues
+        if (abs(x_change) < (0.17*dist)):
+            x_change = 0
         z_change = math.cos((card*math.pi)/180)*dist
+        if (abs(z_change) < (0.17*dist)):
+            z_change = 0
         new_x = x + x_change
         new_z = z + z_change
         return [new_x, new_z]
@@ -124,11 +129,24 @@ class Aircraft:
         self.caInstance = Collision_avoidance()
         self.mover = Mover(self.speed, self.ID)
         self.communicator = Communicator(self.ID)
+        
+    def listen(self):
+        ## Listen for Neighbors
+        self.neighbors = self.communicator.listen(self.ID)
 
+    def broadcast(self):
+        ## Broadcast Move
+        self.communicator.broadcast(self.x, self.y, self.z, self.speed, self.cardinality)
 
+    def move(self):
+        ## Move
+        newcoords = self.mover.move(self.goUp, self.x, self.y, self.z, self.cardinality)
+        self.x = newcoords[0]
+        self.y = newcoords[1]
+        self.z = newcoords[2]
 
-    ##
-    def check_neighbors(self):
+        
+    def collision_avoidance(self):
         myInfo = [self.ID, self.x, self.y, self.z]
         ## print(myInfo)
         for i in self.neighbors:
@@ -138,20 +156,7 @@ class Aircraft:
             ## create the collision avoidance object and call it
             self.caInstance.update_ca(myInfo, invInfo)
             didAdjust = self.caInstance.run_ca()
-        return didAdjust
-        
-    def step(self):
-        ## Listen for Neighbors
-        self.neighbors = self.communicator.listen(self.ID)
-        ## Do CA for each neighbor
-        goUp = self.check_neighbors()
-        ## Move
-        newcoords = self.mover.move(goUp, self.x, self.y, self.z, self.cardinality)
-        self.x = newcoords[0]
-        self.y = newcoords[1]
-        self.z = newcoords[2]
-        ## Broadcast Move
-        self.communicator.broadcast(self.x, self.y, self.z, self.speed, self.cardinality)
+        self.goUp = didAdjust
         
         
 
@@ -163,7 +168,7 @@ class Simulator:
     def __init__(self, stepNum):
         self.steps = stepNum
 
-    def createAirplanes(self):
+    def create_airplanes(self):
         sqliteGet = "SELECT * FROM airwaves;"
         for row in c.execute(sqliteGet):
             planeInfo = [row[0],row[1],row[2],row[3],row[4],row[5]]
@@ -177,7 +182,10 @@ class Simulator:
             while self.indef:
                 print("This is step: " +str(simStep))
                 for a in self.airplanes:
-                    a.step()
+                    a.listen()
+                    a.collision_avoidance()
+                    a.move()
+                    a.broadcast()
                 commit_stage()
                 simStep +=1
         else:
@@ -185,7 +193,10 @@ class Simulator:
                 simStep+=1
                 print("This is step: " +str(simStep))
                 for a in self.airplanes:
-                    a.step()
+                    a.listen()
+                    a.collision_avoidance()
+                    a.move()
+                    a.broadcast()
                 commit_stage()
                 
                 
@@ -230,9 +241,7 @@ def db_reader(ID):
         neighborDict[dictID] = dataSet
     return neighborDict
 
+
 sim = Simulator(40)
-sim.createAirplanes()
+sim.create_airplanes()
 sim.run_sim()
-
-
-            
