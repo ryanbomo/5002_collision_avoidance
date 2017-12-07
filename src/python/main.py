@@ -162,7 +162,6 @@ class Aircraft:
 
 
 class Simulator:
-    indef = False
     airplanes = []
     
     def __init__(self, stepNum):
@@ -177,8 +176,6 @@ class Simulator:
     def run_sim(self):
         simStep = 0
         if self.steps ==0:
-            self.indef = True
-        if self.indef:
             while self.indef:
                 print("This is step: " +str(simStep))
                 for a in self.airplanes:
