@@ -1,7 +1,7 @@
 ## Correct speed so that it is a property of the plane, and so that steps work correctly
 ## Fix Move() function
 
-import math, re, sqlite3
+import math, sqlite3
 
 ##
 conn = sqlite3.connect('airwaves.db')
@@ -10,9 +10,7 @@ c=conn.cursor()
 class Collision_avoidance:
     MINDIST = 1000
 
-
-    ## Collision avoidance initialization variables
-    def __init__(self, invInfo, myInfo):
+    def update_ca(self, myInfo, invInfo):
         self.invID = invInfo[0]
         self.invX = invInfo[1]
         self.invY = invInfo[2]
@@ -23,44 +21,97 @@ class Collision_avoidance:
         self.myZ = myInfo[3]
 
     
-    def run_ca(self):
-        ##figure goUp
-        if (self.myY < self.invY):
-            goUp = 0
-        elif (self.myY > self.invY):
-            goUp = 1
-        elif (self.myID > self.invID):
-            goUp = 1
-        elif (self.myID < self.invID):
-            goUp = 0
-        return goUp
-        
-    
-        ## calc distance
+    def run_ca(self):        ## calc distance
         xSqr = (self.myX - self.invX) * (self.myX - self.invX)
         ySqr = (self.myY - self.invY) * (self.myY - self.invY)
         zSqr = (self.myZ - self.invZ) * (self.myZ - self.invZ)
         mySqr = xSqr + ySqr + zSqr
         myDistance = math.sqrt(mySqr)
         if (myDistance < self.MINDIST):
-            print(str(self.myID) + ":Intruder Detected.")
-            print(str(self.myID) + ":Intruder is " + str(myDistance) + " units away.")
-            print(str(self.myID) + ":Evasive Action Needed.")
-            self.calc_adjust(myDistance,goUp)
-            return 1
+            print(str(self.myID) + ": Intruder Detected.")
+            print(str(self.myID) + ": Intruder is " + str(myDistance) + " units away.")
+        ##figure goUp
+            if (self.myY < self.invY):
+                print(str(self.myID) + ": Evasive Action Needed - Go Down!")
+                goUp = 0
+            elif (self.myY > self.invY):
+                print(str(self.myID) + ": Evasive Action Needed - Go Up!")
+                goUp = 1
+            elif (self.myID > self.invID):
+                print(str(self.myID) + ": Evasive Action Needed - Go Up!")
+                goUp = 1
+            elif (self.myID < self.invID):
+                print(str(self.myID) + ": Evasive Action Needed - Go Down!")
+                goUp = 0
         else:
-            return 0
-    
-    def calc_adjust(self,distance,goUp):
-        adjustDistance = (self.MINDIST-distance)/2
-        if (goUp == 0):
-            self.myY = self.myY -adjustDistance
-        elif (goUp==1):
-            self.myY = self.myY + adjustDistance
+            goUp = -1
+        return goUp
 
+    
+ 
+        
+class Mover:
+    ANGLE_ASCENT = 0
+    ANGLE_DESCENT = 0
+
+    def __init__(self, my_speed, my_id):
+        self.speed = my_speed
+        self.myID = my_id
+
+    def move(self, goUp, my_x, my_y, my_z, card):
+        if (goUp == 1):
+            print(str(self.myID) + ": Moving Up")
+            ## calc ascent
+            ascent = math.sin((self.ANGLE_ASCENT*math.pi)/180)*self.speed
+            newY = my_y + ascent
+            ## calc vertical movement
+            vert = math.cos((self.ANGLE_ASCENT*math.pi)/180)*self.speed
+            newXZ = self.vert_move(my_x, my_z, vert, card)
+            ## return new coords
+        elif (goUp == 0):
+            print(str(self.myID) + ": Moving Down")
+            ## calc descent
+            descent = math.sin((self.ANGLE_DESCENT*math.pi)/180)*self.speed
+            newY = my_y - descent
+            ## calc verticla movment
+            vert = math.cos((self.ANGLE_DESCENT*math.pi)/180)*self.speed
+            newXZ = self.vert_move(my_x, my_z, vert, card)
+        else:
+            print(str(self.myID)+": Moving Flat")
+            newY = my_y
+            newXZ = self.vert_move(my_x, my_z, self.speed, card)
             
+            
+        newCoords = [newXZ[0], newY, newXZ[1]]
+        return newCoords
+    
+    def vert_move(self, x, z, dist, card):
+        x_change = math.sin((card*math.pi)/180)*dist
+        z_change = math.cos((card*math.pi)/180)*dist
+        new_x = x + x_change
+        new_z = z + z_change
+        return [new_x, new_z]
+        
+
+class Communicator:
+
+    def __init__(self, myID):
+        self.ID = myID
+
+    def listen(self, ID):
+        neighbors = db_reader(self.ID)
+        return neighbors
+        
+        
+    def broadcast(self, x, y, z, speed, cardinality):
+        infoList = [self.ID, x, y, z, speed, cardinality]
+        db_writer(infoList)
+
+        
+        
 class Aircraft:
     neighbors = {}
+    
 
     ## These are the variable that it initializes with
     def __init__(self, myInfo):
@@ -70,22 +121,14 @@ class Aircraft:
         self.z = myInfo[3]
         self.speed = myInfo[4]
         self.cardinality = myInfo[5]
+        self.caInstance = Collision_avoidance()
+        self.mover = Mover(self.speed, self.ID)
+        self.communicator = Communicator(self.ID)
 
-    ## This is a sort of input
-    def listen(self):
-        print(str(self.ID)+": Listening.")
-        self.neighbors = db_reader(self.ID)
-
-    ## This is a sort of output
-    def broadcast(self):
-        print(str(self.ID)+": Broadcasting.")
-        infoList = [self.ID, self.x, self.y, self.z, self.speed, self.cardinality]
-        db_writer(infoList)
 
 
     ##
     def check_neighbors(self):
-        print(str(self.ID)+": Checking Neighbors.")
         myInfo = [self.ID, self.x, self.y, self.z]
         ## print(myInfo)
         for i in self.neighbors:
@@ -93,27 +136,23 @@ class Aircraft:
             for j in self.neighbors[i]:
                 invInfo.append(j)
             ## create the collision avoidance object and call it
-            caInstance = Collision_avoidance(invInfo,myInfo)
-            didAdjust = caInstance.run_ca()
-            if (didAdjust>0):
-                self.y = caInstance.myY
+            self.caInstance.update_ca(myInfo, invInfo)
+            didAdjust = self.caInstance.run_ca()
+        return didAdjust
         
-
-    ## NEEDS WORK, NOT CORRECT VERSION, JUST FOR CLASS DEMO NOW
-    ## NOT WORKING CORRECTLY in DEMO VERSION EITHER
-    def move(self):
-        print(str(self.ID)+": Moving.")
-        if self.cardinality == 0:
-            self.z = self.z + self.speed
-        if self.cardinality == 180:
-            self.z = self.z -self.speed
-##        if 0<=(self.cardinality)<90 or 270<(self.cardinality)<=360:
-##            x_sign = 1
-##        elif 90<(self.cardinality)<270:
-##            x_sign = -1
-##        else:
-##            x_sign = 0
-##        if
+    def step(self):
+        ## Listen for Neighbors
+        self.neighbors = self.communicator.listen(self.ID)
+        ## Do CA for each neighbor
+        goUp = self.check_neighbors()
+        ## Move
+        newcoords = self.mover.move(goUp, self.x, self.y, self.z, self.cardinality)
+        self.x = newcoords[0]
+        self.y = newcoords[1]
+        self.z = newcoords[2]
+        ## Broadcast Move
+        self.communicator.broadcast(self.x, self.y, self.z, self.speed, self.cardinality)
+        
         
 
 ## NEED TO UPDATE PER CLASS DISCUSSION
@@ -138,10 +177,7 @@ class Simulator:
             while self.indef:
                 print("This is step: " +str(simStep))
                 for a in self.airplanes:
-                    a.listen()
-                    a.check_neighbors()
-                    a.move()
-                    a.broadcast()
+                    a.step()
                 commit_stage()
                 simStep +=1
         else:
@@ -149,10 +185,8 @@ class Simulator:
                 simStep+=1
                 print("This is step: " +str(simStep))
                 for a in self.airplanes:
-                    a.listen()
-                    a.check_neighbors()
-                    a.move()
-                    a.broadcast()
+                    a.step()
+                commit_stage()
                 
                 
 ## commits stage changes
@@ -200,15 +234,5 @@ sim = Simulator(40)
 sim.createAirplanes()
 sim.run_sim()
 
-'''
-
-def Communicator
-    Has Listener and Broadcaster
-
-def Mover
-    Does the Movement updates
-
-CA stays the same
-'''
 
             
