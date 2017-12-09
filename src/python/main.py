@@ -164,13 +164,14 @@ class Aircraft:
 class Simulator:
     airplanes = []
     
-    def __init__(self, stepNum):
+    def __init__(self, stepNum, steps_per_second):
         self.steps = stepNum
+        self.sps = steps_per_second
 
     def create_airplanes(self):
         sqliteGet = "SELECT * FROM airwaves;"
         for row in c.execute(sqliteGet):
-            planeInfo = [row[0],row[1],row[2],row[3],row[4],row[5]]
+            planeInfo = [row[0],row[1],row[2],row[3],(row[4]/self.sps),row[5]]
             self.airplanes.append(Aircraft(planeInfo))
             
     def run_sim(self):
