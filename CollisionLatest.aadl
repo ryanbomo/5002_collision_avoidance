@@ -1,6 +1,16 @@
 package Aircraft
 public
 	with Base_Types;
+	
+	process Simulator
+	end Simulator;
+	
+	process Mover
+	end Mover;
+	
+	process Communicator	
+	end Communicator;
+	
 	process CollisionAvoidance
 		features
       myX: in data port Base_Types::integer;
