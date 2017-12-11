@@ -6,7 +6,7 @@ y INTEGER,
 z INTEGER,
 speed INTEGER,
 cardinality INTEGER);
-INSERT INTO "airwaves" VALUES(1,0,10000,0,25,45);
+INSERT INTO "airwaves" VALUES(1,0,10000,0,200,45);
 
 DROP TABLE stage;
 CREATE TABLE stage (

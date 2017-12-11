@@ -149,6 +149,8 @@ class Aircraft:
     def collision_avoidance(self):
         myInfo = [self.ID, self.x, self.y, self.z]
         ## print(myInfo)
+        if not self.neighbors:
+            didAdjust = -1
         for i in self.neighbors:
             invInfo = [i]
             for j in self.neighbors[i]:
@@ -162,15 +164,16 @@ class Aircraft:
 
 
 class Simulator:
-    airplanes = []
     
     def __init__(self, stepNum, steps_per_second):
         self.steps = stepNum
         self.sps = steps_per_second
+        self.airplanes = []
 
     def create_airplanes(self):
         sqliteGet = "SELECT * FROM airwaves;"
         for row in c.execute(sqliteGet):
+            print(row)
             planeInfo = [row[0],row[1],row[2],row[3],(row[4]/self.sps),row[5]]
             self.airplanes.append(Aircraft(planeInfo))
             
